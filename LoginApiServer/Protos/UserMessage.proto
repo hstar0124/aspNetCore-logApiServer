@@ -1,0 +1,76 @@
+﻿syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+// 공통 상태 코드
+enum UserStatusCode 
+{
+    Success = 0;
+    UserIdAlreadyExists = 1;
+    UserNotExists = 2;
+    DifferentPassword = 3;
+    Failure = 4;
+
+    ServerError = 99;
+}
+
+message StringValue
+{
+    string value = 1;
+}
+
+// 공통 응답 메시지
+message UserResponse 
+{
+    UserStatusCode status = 1;
+    string message = 2;                 // 상태 코드에 대한 설명
+    google.protobuf.Any payload = 3;    // 응답 본문 (다양한 메시지 타입을 지원하기 위해 Any 타입 사용)
+}
+
+message UserErrorResponse 
+{
+    string message = 1;
+}
+
+// 계정 정보 메시지
+message GetUserRequest 
+{
+    string userId = 1;
+    string username = 2;
+    string email = 3;
+}
+
+// 계정 생성 요청 메시지
+message CreateUserRequest 
+{
+    string userId = 1;
+    string password = 2;
+    string username = 3;
+    string email = 4;
+}
+
+// 계정 정보 변경 요청 메시지
+message UpdateUserRequest 
+{
+    string userId = 1;
+    string password = 2;
+    string username = 3;
+    string email = 4;
+    string toBePassword = 5;
+    string toBeUsername = 6;
+    string toBeEmail = 7;
+}
+
+// 계정 삭제 요청 메시지
+message DeleteUserRequest 
+{
+    string userId = 1;
+    string password = 2;
+}
+
+// 로그인 요청 메시지
+message LoginRequest 
+{
+    string userId = 1;
+    string password = 2;
+}
