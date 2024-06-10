@@ -13,10 +13,23 @@ namespace LoginApiServer.Repository
         // 나중에 디비에서 오토인크리먼트로 빼자.
         private long _id = 0;
 
+
+
         public UserRepositoryFromMemory(ILogger<UserRepositoryFromMemory> logger)
         {
             _logger = logger;
             _users = new ConcurrentDictionary<string, User>();
+        }
+
+        public User? GetUserFromUserid(string userId)
+        {
+            if (!_users.ContainsKey(userId))
+            {
+                _logger.LogError("User retrieval failed for UserId {UserId}. UserId does not exist.", userId);
+                return null;
+            }
+
+            return _users[userId];
         }
 
         public UserStatusCode CreateUser(User userInfo)
@@ -50,6 +63,8 @@ namespace LoginApiServer.Repository
             _users[userInfo.UserId].IsAlive = false;
             return UserStatusCode.Success;
         }
+
+
 
         public UserStatusCode LoginUser(User userInfo)
         {

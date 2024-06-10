@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using LoginApiServer.Model;
 using LoginApiServer.Service.Interface;
 using LoginApiServer.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -25,19 +26,7 @@ namespace LoginApiServer.Controllers
         [HttpGet]
         public IActionResult GetUserTest()
         {
-            var user = new GetUserRequest
-            {
-                UserId = "testUserId",
-                Username = "testUsername",
-                Email = "testEmail"
-            };
-
-            var response = new UserResponse
-            {
-                Status = UserStatusCode.Success,
-                Message = "Success",
-                Content = Any.Pack(user)
-            };
+            string response = "testUserId";
 
             return Ok(response);
         }
@@ -106,6 +95,21 @@ namespace LoginApiServer.Controllers
             };
 
             return Ok(user);
+        }
+
+        [HttpGet]
+        public UserResponse GetUser([FromQuery]string userId)
+        {
+           
+            try
+            {
+                var response = _accountReadService.GetUserFromUserid(userId);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return ProtobufResultHelper.CreateErrorResult(UserStatusCode.ServerError, $"An error occurred while getting the User: {ex.Message}");
+            }
         }
 
         // 유저 생성

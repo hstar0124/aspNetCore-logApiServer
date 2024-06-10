@@ -20,6 +20,13 @@ message StringValue
     string value = 1;
 }
 
+message GetUserResponse
+{
+    string userId = 1;    
+    string username = 2;
+    string email = 3;
+}
+
 // 공통 응답 메시지
 message UserResponse 
 {
@@ -55,11 +62,9 @@ message UpdateUserRequest
 {
     string userId = 1;
     string password = 2;
-    string username = 3;
-    string email = 4;
-    string toBePassword = 5;
-    string toBeUsername = 6;
-    string toBeEmail = 7;
+    string toBePassword = 3;
+    string toBeUsername = 4;
+    string toBeEmail = 5;
 }
 
 // 계정 삭제 요청 메시지
