@@ -11,6 +11,7 @@ enum UserStatusCode
     DifferentPassword = 3;
     Failure = 4;
 
+    None = 90;
     ServerError = 99;
 }
 
@@ -24,7 +25,7 @@ message UserResponse
 {
     UserStatusCode status = 1;
     string message = 2;                 // 상태 코드에 대한 설명
-    google.protobuf.Any payload = 3;    // 응답 본문 (다양한 메시지 타입을 지원하기 위해 Any 타입 사용)
+    google.protobuf.Any content = 3;    // 응답 본문 (다양한 메시지 타입을 지원하기 위해 Any 타입 사용)
 }
 
 message UserErrorResponse 

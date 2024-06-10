@@ -10,6 +10,9 @@ namespace LoginApiServer.Repository
         private readonly ILogger<UserRepositoryFromMemory> _logger;
         private readonly ConcurrentDictionary<string, User> _users;
 
+        // 나중에 디비에서 오토인크리먼트로 빼자.
+        private long _id = 0;
+
         public UserRepositoryFromMemory(ILogger<UserRepositoryFromMemory> logger)
         {
             _logger = logger;
@@ -24,6 +27,9 @@ namespace LoginApiServer.Repository
                 _logger.LogError("User creation failed for UserId {UserId}. UserId already exists.", userInfo.UserId);
                 return UserStatusCode.UserIdAlreadyExists;
             }
+
+            // 아토믹 처리 필요
+            userInfo.Id = ++_id;
 
             // 비밀번호 해시
             userInfo.Password = PasswordHelper.HashPassword(userInfo.Password);

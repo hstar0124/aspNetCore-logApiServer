@@ -10,11 +10,64 @@ namespace LoginApiServer.Service
     {
         private readonly ILogger<UserWriteService> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly ICacheRepository _cacheRepository;
 
-        public UserWriteService (ILogger<UserWriteService> logger, IUserRepository userRepository)
+        public UserWriteService (ILogger<UserWriteService> logger, IUserRepository userRepository, ICacheRepository cacheRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
+            _cacheRepository = cacheRepository;
+        }
+
+        public UserResponse LoginUser(LoginRequest request)
+        {
+            var status = UserStatusCode.Success;
+            var user = new User
+            {
+                UserId = request.UserId,
+                Password = request.Password
+            };
+
+            try
+            {
+                status = _userRepository.LoginUser(user);
+                if (status != UserStatusCode.Success)
+                {
+                    return new UserResponse
+                    {
+                        Status = status,
+                        Message = "User login failed"
+                    };
+                }
+
+                // 세션ID 생성
+                string sessionId = Guid.NewGuid().ToString().Replace("-", "");
+                var sessionIdToResponse = new StringValue
+                {
+                    Value = sessionId
+                };
+
+                // Redis에 세션 ID 저장
+                status = _cacheRepository.CreateSession(sessionId, user.Id);
+
+
+                return new UserResponse
+                {
+                    Status = status,
+                    Message = (status == UserStatusCode.Success) ? "User Login successfully" : "User Login failed",
+                    Content = Any.Pack(sessionIdToResponse)
+                };
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while Login the User for UserId {UserId}.", request.UserId);
+                return new UserResponse
+                {
+                    Status = status,
+                    Message = $"An error occurred while Login the User: {ex.Message}"
+                };
+            }
         }
 
         public UserResponse CreateUser(CreateUserRequest request)
@@ -38,7 +91,7 @@ namespace LoginApiServer.Service
                 {
                     Status = status,
                     Message = (status == UserStatusCode.Success) ? "User created successfully" : "User creation failed",
-                    Payload = Any.Pack(request)
+                    Content = Any.Pack(request)
                 };
             }
             catch (Exception ex)

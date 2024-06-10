@@ -36,7 +36,7 @@ namespace LoginApiServer.Controllers
             {
                 Status = UserStatusCode.Success,
                 Message = "Success",
-                Payload = Any.Pack(user)
+                Content = Any.Pack(user)
             };
 
             return Ok(response);
@@ -130,7 +130,7 @@ namespace LoginApiServer.Controllers
         {
             try
             {
-                var response = _accountReadService.LoginUser(request);
+                var response = _accountWriteService.LoginUser(request);
 
                 return response;
             }

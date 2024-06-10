@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IUserWriteService, UserWriteService>();
 builder.Services.AddSingleton<IUserReadService, UserReadService>();
 builder.Services.AddSingleton<IUserRepository, UserRepositoryFromMemory>();
+builder.Services.AddSingleton<ICacheRepository, CacheRepositoryFromRedis>();
 
 var app = builder.Build();
 

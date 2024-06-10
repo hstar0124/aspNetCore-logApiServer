@@ -9,59 +9,15 @@ namespace LoginApiServer.Service
     {
         private readonly ILogger<UserReadService> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly ICacheRepository _cacheRepository;
 
-        public UserReadService(ILogger<UserReadService> logger, IUserRepository userRepository)
+        public UserReadService(ILogger<UserReadService> logger, IUserRepository userRepository, ICacheRepository cacheRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
+            _cacheRepository = cacheRepository;
         }
 
-        public UserResponse LoginUser(LoginRequest request)
-        {
-            var status = UserStatusCode.Success;
-            var user = new User
-            {
-                UserId = request.UserId,
-                Password = request.Password
-            };
-
-            try
-            {
-                status = _userRepository.LoginUser(user);
-                if (status != UserStatusCode.Success)
-                {
-                    return new UserResponse
-                    {
-                        Status = status,
-                        Message = "User login failed"
-                    };
-                }
-
-                // 세션ID 생성
-                var uuid = new StringValue 
-                { 
-                    Value = Guid.NewGuid().ToString().Replace("-", "") 
-                };
-
-                // TODO : Redis 저장
-
-                return new UserResponse
-                {
-                    Status = status,
-                    Message = (status == UserStatusCode.Success) ? "User Login successfully" : "User Login failed",
-                    Payload = Any.Pack(uuid)
-                };
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while Login the User for UserId {UserId}.", request.UserId);
-                return new UserResponse
-                {
-                    Status = status,
-                    Message = $"An error occurred while Login the User: {ex.Message}"
-                };
-            }
-        }
+        
     }
 }
