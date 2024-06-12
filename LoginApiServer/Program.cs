@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // 모든 HTTP 요청을 HTTPS로 리디렉션
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -145,7 +145,7 @@ namespace LoginApiServer.Controllers
         }
 
         // 유저 변경
-        [HttpPut]
+        [HttpPost]
         public UserResponse Update([FromBody] UpdateUserRequest request)
         {
             try
@@ -163,7 +163,7 @@ namespace LoginApiServer.Controllers
         }
 
         // 유저 삭제
-        [HttpDelete]
+        [HttpPost]
         public UserResponse Delete([FromBody] DeleteUserRequest request)
         {
             try
