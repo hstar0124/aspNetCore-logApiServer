@@ -27,6 +27,13 @@ message GetUserResponse
     string email = 3;
 }
 
+message LoginResponse
+{
+    string serverIp = 1;
+    string serverPort = 2;
+    string sessionId = 3;
+}
+
 // 공통 응답 메시지
 message UserResponse 
 {

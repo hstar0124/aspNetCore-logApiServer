@@ -27,13 +27,14 @@ namespace LoginApiServer.Repository
                 RedisValue existingSessionId = _sessionDb.StringGet(accountKey);
                 if (existingSessionId.HasValue)
                 {
-                    // 기존 세션이 존재하면 AccountID와 기존 SessionID의 시간을 연장
                     var existingSessionKey = $"Session:{existingSessionId}";
 
                     var tran = _sessionDb.CreateTransaction();
 
-                    tran.KeyExpireAsync(accountKey, new TimeSpan(0, 3, 0));
-                    tran.KeyExpireAsync(existingSessionKey, new TimeSpan(0, 3, 0));
+                    // 기존 세션 삭제 및 새로운 세션 설정
+                    tran.KeyDeleteAsync(existingSessionKey);
+                    tran.StringSetAsync(sessionKey, accountId, new TimeSpan(0, 3, 0));
+                    tran.StringSetAsync(accountKey, sessionId, new TimeSpan(0, 3, 0));
 
                     bool committed = tran.Execute();
                     return committed ? UserStatusCode.Success : UserStatusCode.Failure;

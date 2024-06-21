@@ -42,20 +42,36 @@ namespace LoginApiServer.Service
 
                 // 세션ID 생성
                 string sessionId = Guid.NewGuid().ToString().Replace("-", "");
-                var sessionIdToResponse = new StringValue
-                {
-                    Value = sessionId
-                };
+                //var sessionIdToResponse = new StringValue
+                //{
+                //    Value = sessionId
+                //};
 
                 // Redis에 세션 ID 저장
                 status = _cacheRepository.CreateSession(sessionId, user.Id);
+                if (status != UserStatusCode.Success)
+                {
+                    _logger.LogError("An error occurred while login the User for UserId {UserId}.", request.UserId);
+                    return new UserResponse
+                    {
+                        Status = status,
+                        Message = "An error occurred while login the User"
+                    };
+                }
 
+                // Chat Sever IP:Port, SessionID
+                var loginSuccessResponse = new LoginResponse
+                {
+                    ServerIp = "127.0.0.1",
+                    ServerPort = "4242",
+                    SessionId = sessionId
+                };
 
                 return new UserResponse
                 {
                     Status = status,
                     Message = (status == UserStatusCode.Success) ? "User Login successfully" : "User Login failed",
-                    Content = Any.Pack(sessionIdToResponse)
+                    Content = Any.Pack(loginSuccessResponse)
                 };
 
             }
